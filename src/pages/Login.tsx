@@ -7,9 +7,18 @@ import { Eye, EyeOff, LogIn, UserPlus } from 'lucide-react';
 import { z } from 'zod';
 
 const loginSchema = z.object({
-  email: z.string().email('Invalid email address'),
-  password: z.string().min(6, 'Password must be at least 6 characters'),
+  username: z.string().min(2, 'Username must be at least 2 characters'),
+  password: z.string().min(1, 'Password is required'),
 });
+
+// Admin credentials
+const ADMIN_USERS: Record<string, { password: string; name: string }> = {
+  'shinobu': { password: 'admin1', name: 'Shinobu' },
+  'minion': { password: 'admin2', name: 'Minion' },
+  'black skull': { password: 'admin3', name: 'Black Skull' },
+  'max': { password: 'admin4', name: 'Max' },
+  'mjgaming': { password: 'admin5', name: 'MJ Gaming' },
+};
 
 const registerSchema = loginSchema.extend({
   name: z.string().min(2, 'Name must be at least 2 characters'),
@@ -29,13 +38,13 @@ export default function LoginPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   
   const [loginData, setLoginData] = useState<LoginForm>({
-    email: '',
+    username: '',
     password: '',
   });
   
   const [registerData, setRegisterData] = useState<RegisterForm>({
+    username: '',
     name: '',
-    email: '',
     password: '',
     confirmPassword: '',
   });
@@ -61,30 +70,27 @@ export default function LoginPage() {
     try {
       loginSchema.parse(loginData);
 
-      // Demo login - check if admin
-      if (loginData.email === 'admin@tamizhcrew.dev' && loginData.password === 'admin123') {
+      const usernameKey = loginData.username.toLowerCase();
+      const adminUser = ADMIN_USERS[usernameKey];
+
+      // Check if admin
+      if (adminUser && adminUser.password === loginData.password) {
         localStorage.setItem('tamizhcrew-user', JSON.stringify({
-          email: loginData.email,
-          name: 'Admin',
+          username: loginData.username,
+          name: adminUser.name,
           role: 'admin',
         }));
         toast({
-          title: 'Welcome Admin! 👋',
+          title: `Welcome ${adminUser.name}! 👋`,
           description: 'Redirecting to admin panel...',
         });
         navigate('/admin');
       } else {
-        // Regular user login simulation
-        localStorage.setItem('tamizhcrew-user', JSON.stringify({
-          email: loginData.email,
-          name: 'User',
-          role: 'user',
-        }));
         toast({
-          title: 'Login Successful! 🎉',
-          description: 'Welcome back to Tamizh Crew!',
+          title: 'Invalid Credentials',
+          description: 'Please check your username and password.',
+          variant: 'destructive',
         });
-        navigate('/');
       }
     } catch (error) {
       if (error instanceof z.ZodError) {
@@ -112,13 +118,13 @@ export default function LoginPage() {
       const users = JSON.parse(localStorage.getItem('tamizhcrew-users') || '[]');
       users.push({
         name: registerData.name,
-        email: registerData.email,
+        username: registerData.username,
         createdAt: new Date().toISOString(),
       });
       localStorage.setItem('tamizhcrew-users', JSON.stringify(users));
 
       localStorage.setItem('tamizhcrew-user', JSON.stringify({
-        email: registerData.email,
+        username: registerData.username,
         name: registerData.name,
         role: 'user',
       }));
@@ -185,19 +191,19 @@ export default function LoginPage() {
               {isLogin ? (
                 <form onSubmit={handleLoginSubmit} className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium mb-2">Email</label>
+                    <label className="block text-sm font-medium mb-2">Username</label>
                     <input
-                      type="email"
-                      name="email"
-                      value={loginData.email}
+                      type="text"
+                      name="username"
+                      value={loginData.username}
                       onChange={handleLoginChange}
-                      placeholder="your@email.com"
+                      placeholder="Enter username"
                       className={`w-full h-12 px-4 rounded-lg bg-muted border ${
-                        errors.email ? 'border-destructive' : 'border-border'
+                        errors.username ? 'border-destructive' : 'border-border'
                       } focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none`}
                     />
-                    {errors.email && (
-                      <p className="text-destructive text-sm mt-1">{errors.email}</p>
+                    {errors.username && (
+                      <p className="text-destructive text-sm mt-1">{errors.username}</p>
                     )}
                   </div>
 
@@ -257,19 +263,19 @@ export default function LoginPage() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium mb-2">Email</label>
+                    <label className="block text-sm font-medium mb-2">Username</label>
                     <input
-                      type="email"
-                      name="email"
-                      value={registerData.email}
+                      type="text"
+                      name="username"
+                      value={registerData.username}
                       onChange={handleRegisterChange}
-                      placeholder="your@email.com"
+                      placeholder="Choose a username"
                       className={`w-full h-12 px-4 rounded-lg bg-muted border ${
-                        errors.email ? 'border-destructive' : 'border-border'
+                        errors.username ? 'border-destructive' : 'border-border'
                       } focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none`}
                     />
-                    {errors.email && (
-                      <p className="text-destructive text-sm mt-1">{errors.email}</p>
+                    {errors.username && (
+                      <p className="text-destructive text-sm mt-1">{errors.username}</p>
                     )}
                   </div>
 
@@ -328,15 +334,11 @@ export default function LoginPage() {
                 </form>
               )}
 
-              <p className="text-center text-sm text-muted-foreground mt-6">
-                {isLogin ? (
-                  <>
-                    Demo: <code className="text-primary">admin@tamizhcrew.dev</code> / <code className="text-primary">admin123</code>
-                  </>
-                ) : (
-                  'By registering, you agree to our Terms of Service.'
-                )}
-              </p>
+              {!isLogin && (
+                <p className="text-center text-sm text-muted-foreground mt-6">
+                  By registering, you agree to our Terms of Service.
+                </p>
+              )}
             </div>
           </div>
         </div>
