@@ -18,19 +18,19 @@ const contactInfo = [
   {
     icon: Mail,
     label: 'Email',
-    value: 'contact@tamizhcrew.dev',
-    href: 'mailto:contact@tamizhcrew.dev',
+    value: 'thamizcrew19@gmail.com',
+    href: 'mailto:thamizcrew19@gmail.com',
   },
   {
     icon: MessageCircle,
     label: 'Discord',
-    value: 'Tamizh Crew Server',
-    href: 'https://discord.gg/tamizhcrew',
+    value: 'Tamizh Crew Developement',
+    href: 'https://discord.gg/nWJ6UhQe',
   },
   {
     icon: Phone,
     label: 'WhatsApp',
-    value: '+91 98765 43210',
+    value: '+91 93608 35450',
     href: 'https://wa.me/919876543210',
   },
   {
