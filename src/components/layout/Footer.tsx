@@ -24,7 +24,7 @@ export function Footer() {
             </p>
             <div className="flex gap-3">
               <a
-                href="https://discord.gg/tamizhcrew"
+                href="https://discord.gg/gnK6KsEv"
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -33,7 +33,7 @@ export function Footer() {
                 </Button>
               </a>
               <a
-                href="https://wa.me/919876543210"
+                href="https://wa.me/93608 35450"
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -43,7 +43,7 @@ export function Footer() {
                   </svg>
                 </Button>
               </a>
-              <a href="mailto:contact@tamizhcrew.dev">
+              <a href="mailto:thamizcrew19@gmail.com">
                 <Button variant="outline" size="icon" className="rounded-full">
                   <Mail className="w-4 h-4" />
                 </Button>
